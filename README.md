@@ -27,6 +27,12 @@ cp config.example.yml ~/.zabbix-docker/config.yml
 ```
 Edit ~/.zabbix-docker/config.yml
 
+## On Zabbix UI
+
+- Configuration > Action > Auto registration
+Add auto-registration based on host metadata "DContainer", Operations: add
+  host, Link to templates = Template DContainer
+
 # Running
 
 Add to crontab
