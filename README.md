@@ -19,6 +19,14 @@ docker run \
   google/cadvisor:latest
 ```
 
+# Installation
+
+```
+go get
+go build
+sudo mv zabbix-docker /usr/local/bin
+```
+
 # Configuration
 
 ```
@@ -38,7 +46,7 @@ Add auto-registration based on host metadata "DContainer", Operations: add
 Add to crontab
 
 ```
-5/* * * * * /home/myuser/zabbix-docker -z >/dev/null 2>&1
+5/* * * * * /usr/local/bin/zabbix-docker -z >/dev/null 2>&1
 ```
 
 
