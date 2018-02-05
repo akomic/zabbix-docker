@@ -1,1 +1,2 @@
 addr: http://localhost:8080/
+zabbixAddr: localhost:10051
