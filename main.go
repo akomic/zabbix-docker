@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"cadvisor-cli/commands"
+	"zabbix-docker/commands"
 )
 
-//
 func main() {
 	if err := commands.Cmd.Execute(); err != nil {
 		fmt.Println(err)

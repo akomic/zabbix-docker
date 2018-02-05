@@ -1,7 +1,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
-BINARY_NAME=cadvisor-cli
+BINARY_NAME=zabbix-docker
 
 .PHONY: list build build-linux clean
 
