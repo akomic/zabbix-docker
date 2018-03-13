@@ -51,6 +51,19 @@ cp config.example.yml ~/.zabbix-docker/config.yml
 ```
 Edit ~/.zabbix-docker/config.yml
 
+
+## Config file
+
+| Variable        | Required | Default                                  | Description                                        |
+| --------------- | -------- | ---------------------------------------- | -------------------------------------------------- |
+| addr            | Yes      | 127.0.0.1:8080                           | CAdvisor server address                            |
+| zabbixAddr      | Yes      | 127.0.0.1:10051                          | Zabbix Server address                              |
+| hostname        | No       | Local Hostname                           | Docker Host Hostname (for Zabbix)                  |
+| hostGroup1      | No       | Docker Containers                        | Docker label name to use as host group on Zabbix   |
+| hostGroup2      | No       | Docker Containers                        | Docker label name to use as host group on Zabbix   |
+| hostGroup3      | No       | Docker Containers                        | Docker label name to use as host group on Zabbix   |
+| hostGroup4      | No       | Docker Containers                        | Docker label name to use as host group on Zabbix   |
+
 ## On Zabbix UI
 
 - Configuration > Action > Auto registration
