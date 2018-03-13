@@ -38,8 +38,8 @@ Edit ~/.zabbix-docker/config.yml
 ## On Zabbix UI
 
 - Configuration > Action > Auto registration
-Add auto-registration based on host metadata "DContainer", Operations: add
-  host, Link to templates = Template DContainer
+Add auto-registration based on host metadata "DHost", Operations: add
+  host, Link to templates = Template DHost
 
 # Running
 
@@ -48,5 +48,3 @@ Add to crontab
 ```
 5/* * * * * /usr/local/bin/zabbix-docker -z >/dev/null 2>&1
 ```
-
-
