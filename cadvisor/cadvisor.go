@@ -2,7 +2,6 @@ package cadvisor
 
 import (
 	"fmt"
-	// . "github.com/blacked/go-zabbix"
 	zclient "github.com/akomic/zabbix-proto/client"
 	zsender "github.com/akomic/zabbix-proto/sender"
 	"github.com/google/cadvisor/client"
@@ -25,12 +24,11 @@ func connect() *client.Client {
 	return client
 }
 
-// func containers() map[string]map[string]string {
 func getAllStats() []v1.ContainerInfo {
 	c := connect()
 
 	request := v1.ContainerInfoRequest{NumStats: 1}
-	sInfo, err := c.SubcontainersInfo("/docker", &request)
+	sInfo, err := c.SubcontainersInfo("/", &request)
 	if err != nil {
 		fmt.Println("Error getting containers info %v", err)
 		os.Exit(1)
@@ -44,6 +42,8 @@ func Containers() {
 	for _, container := range sInfo {
 		if container.Id != "" {
 			fmt.Printf("ID: %s Name: %s\n", container.Id, container.Aliases[0])
+			// } else {
+			// 	fmt.Printf("CONTAINER: %v\n", container)
 		}
 	}
 }
@@ -73,13 +73,14 @@ func Container() {
 	}
 }
 
-type DiscoveryPayload struct {
-	Data []map[string]string `json:"data"`
-}
-
 func Zabbix() {
 	verbose := viper.GetBool("verbose")
 	zabbixAddr := viper.GetString("zabbixAddr")
+	hostname := viper.GetString("hostname")
+	hostGroup1 := viper.GetString("hostGroup1")
+	hostGroup2 := viper.GetString("hostGroup2")
+	hostGroup3 := viper.GetString("hostGroup3")
+	hostGroup4 := viper.GetString("hostGroup4")
 
 	zbxComp := strings.Split(zabbixAddr, ":")
 	zabbixHost := zbxComp[0]
@@ -91,6 +92,44 @@ func Zabbix() {
 
 	sInfo := getAllStats()
 
+	// Docker Host
+	items, _ := c.GetActiveItems(fmt.Sprintf("dhost_%s", hostname), "DHost")
+	if verbose {
+		fmt.Println("Doing Active Check for:", fmt.Sprintf("dhost_%s", hostname))
+		fmt.Println("Got:", reflect.TypeOf(items.Data))
+	}
+
+	for _, item := range items.Data {
+		switch {
+		case item.Key == "containerDiscovery":
+			for _, container := range sInfo {
+				if container.Id == "" || len(container.Stats) == 0 {
+					continue
+				}
+				containerName := fmt.Sprintf("%s - %s", container.Aliases[0], container.Id[:12])
+
+				var discoveryData []map[string]string
+
+				discoveryItem := make(map[string]string)
+
+				discoveryItem["{#CONTAINERNAME}"] = containerName
+				// discoveryItem["{#GROUP1}"] = container.Aliases[0]
+				discoveryItem["{#GROUP1}"] = container.Spec.Labels[hostGroup1]
+				discoveryItem["{#GROUP2}"] = container.Spec.Labels[hostGroup2]
+				discoveryItem["{#GROUP3}"] = container.Spec.Labels[hostGroup3]
+				discoveryItem["{#GROUP4}"] = container.Spec.Labels[hostGroup4]
+
+				discoveryData = append(discoveryData, discoveryItem)
+
+				metrics = append(metrics, zsender.NewDiscoveryMetric(fmt.Sprintf("dhost_%s", hostname), item.Key, discoveryData, time.Now().Unix()))
+				if verbose {
+					fmt.Println("Sending:", fmt.Sprintf("dhost_%s", hostname), item.Key, "=", discoveryData)
+				}
+			}
+		}
+	}
+
+	// Docker Containers
 	for _, container := range sInfo {
 		if container.Id == "" || len(container.Stats) == 0 {
 			continue
@@ -104,9 +143,6 @@ func Zabbix() {
 			fmt.Println("Got:", reflect.TypeOf(items.Data))
 		}
 
-		// fmt.Printf("%v\n", reflect.TypeOf(container.Stats[0].DiskIo.IoServiceBytes))
-
-		// fmt.Println("CPU SPEC:", container.Spec.Cpu.Limit)
 		for _, item := range items.Data {
 			switch {
 			// Container Specs
@@ -172,9 +208,6 @@ func Zabbix() {
 
 					discoveryItem["{#DEVICE}"] = device.Device
 
-					// for ioKey, ioVal := range device.Stats {
-					// 	discoveryItem[fmt.Sprintf("{#%s}", strings.ToUpper(ioKey))] = strconv.FormatUint(ioVal, 10)
-					// }
 					discoveryData = append(discoveryData, discoveryItem)
 				}
 

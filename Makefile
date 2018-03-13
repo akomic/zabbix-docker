@@ -8,9 +8,9 @@ BINARY_NAME=zabbix-docker
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 build:
-	$(GOBUILD) -o $(BINARY_NAME)
+	$(GOBUILD) -ldflags="-s -w" -o $(BINARY_NAME)
 build-linux:
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME).linux.amd64
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags="-s -w" -o $(BINARY_NAME).linux.amd64
 clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)

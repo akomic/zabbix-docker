@@ -1,2 +1,7 @@
 addr: http://localhost:8080/
 zabbixAddr: localhost:10051
+hostname: myhost
+hostGroup1: com.amazonaws.ecs.cluster
+hostGroup2: StackName
+hostGroup3: com.amazonaws.ecs.task-definition-family
+hostGroup4: com.amazonaws.ecs.container-name
